@@ -229,6 +229,7 @@ struct dsi_panel_oplus_privite {
 	bool dp_support;
 	bool cabc_enabled;
 	bool lp_config_flag;
+	bool seed_read_back_flag;
 	u32 cabc_status;
 	bool dre_enabled;
 	// Add for apollo support
