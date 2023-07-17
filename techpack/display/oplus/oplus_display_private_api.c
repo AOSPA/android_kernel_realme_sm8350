@@ -598,14 +598,38 @@ static ssize_t oplus_display_set_hbm(struct kobject *obj,
 	return count;
 }
 
+static int lock_panel_register(struct dsi_panel *panel, bool lock)
+{
+	char value0[] = {0x5A, 0x5A};
+	char value1[] = {0xA5, 0xA5};
+
+	if (!panel) {
+		pr_err("%s, Invalid params\n", __func__);
+		return -1;
+	}
+
+	mutex_lock(&(panel->panel_lock));
+
+	if (dsi_panel_initialized(panel)) {
+		if (lock) {
+			mipi_dsi_dcs_write(&(panel->mipi_device), 0xF0, value1, sizeof(value1));
+		}
+		else {
+			mipi_dsi_dcs_write(&(panel->mipi_device), 0xF0, value0, sizeof(value0));
+		}
+	}
+
+	mutex_unlock(&(panel->panel_lock));
+
+	return 0;
+}
+
 static ssize_t oplus_display_set_seed(struct kobject *obj,
 		struct kobj_attribute *attr,
 		const char *buf, size_t count)
 {
 	int temp_save = 0;
 	char reg[10] = {0x0};
-	char value0[] = {0x5A, 0x5A};
-	char value1[] = {0xA5, 0xA5};
 	int i = 0;
 
 	sscanf(buf, "%du", &temp_save);
@@ -618,22 +642,25 @@ static ssize_t oplus_display_set_seed(struct kobject *obj,
 			printk(KERN_INFO "oplus_display_set_seed and main display is null");
 			return count;
 		}
-		for (i = 0;i < 5;i++) {
+		if (get_main_display()->panel->oplus_priv.seed_read_back_flag) {
+			for (i = 0;i < 5;i++) {
+				dsi_display_seed_mode(get_main_display(), seed_mode);
+				if (seed_mode == 0) {
+					break;
+				}
+				lock_panel_register(get_main_display()->panel, false);
+				is_set_seed = true;
+				dsi_display_read_panel_reg(get_main_display(), 0x62, reg, 4);
+				is_set_seed = false;
+				lock_panel_register(get_main_display()->panel, true);
+				printk(KERN_INFO "reg[0]:%x,reg[1]:%x,reg[2]:%x,reg[3]:%x\n", reg[0], reg[1], reg[2], reg[3]);
+				if (reg[1] == 0xb0) {
+					break;
+				}
+			}
+		} else {
 			dsi_display_seed_mode(get_main_display(), seed_mode);
-			if (seed_mode == 0 || strcmp(get_main_display()->panel->name, "samsung AMS643YE01 dsc cmd mode panel")) {
-				break;
-			}
-			mipi_dsi_dcs_write(&(get_main_display()->panel->mipi_device), 0xF0, value0, sizeof(value0));
-			is_set_seed = true;
-			dsi_display_read_panel_reg(get_main_display(), 0x62, reg, 4);
-			is_set_seed = false;
-			mipi_dsi_dcs_write(&(get_main_display()->panel->mipi_device), 0xF0, value1, sizeof(value1));
-			printk(KERN_INFO "reg[0]:%x,reg[1]:%x,reg[2]:%x,reg[3]:%x\n", reg[0], reg[1], reg[2], reg[3]);
-			if (reg[1] == 0xb0) {
-				break;
-			}
 		}
-
 	} else {
 		printk(KERN_ERR
 		       "%s oplus_display_set_seed = %d, but now display panel status is not on\n",
@@ -2845,6 +2872,8 @@ int dsi_display_oplus_set_power(struct drm_connector *connector,
 
 	if (power_mode == SDE_MODE_DPMS_OFF)
 		atomic_set(&display->panel->esd_pending, 1);
+	else if (power_mode == SDE_MODE_DPMS_LP1)
+		atomic_set(&display->panel->esd_pending, 0);
 
 	switch (power_mode) {
 	case SDE_MODE_DPMS_LP1:

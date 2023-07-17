@@ -554,6 +554,9 @@ int dsi_panel_parse_oplus_config(struct dsi_panel *panel)
 			"oplus,mdss-dsi-lp-config-flag");
 	DSI_INFO("oplus,mdss-dsi-lp-config-flag: ", panel->oplus_priv.lp_config_flag ? "true" : "false");
 
+	panel->oplus_priv.seed_read_back_flag = utils->read_bool(utils->data,
+			"oplus,seed-read-back-flag");
+	DSI_INFO("oplus,seed-read-back-flag: %s", panel->oplus_priv.seed_read_back_flag ? "true" : "false");
 /*******************************************
 	fp_type usage:
 	bit(0):lcd capacitive fingerprint(aod/fod are not supported)
