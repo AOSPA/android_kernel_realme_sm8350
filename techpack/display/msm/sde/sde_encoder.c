@@ -1681,10 +1681,8 @@ static void _sde_encoder_rc_restart_delayed(struct sde_encoder_virt *sde_enc,
 {
 	struct drm_encoder *drm_enc = &sde_enc->base;
 	struct msm_drm_private *priv;
-	unsigned int lp, idle_pc_duration, frame_time_ms, fps;
+	unsigned int lp, idle_pc_duration;
 	struct msm_drm_thread *disp_thread;
-	unsigned int min_duration = IDLE_POWERCOLLAPSE_DURATION;
-	unsigned int max_duration = IDLE_POWERCOLLAPSE_IN_EARLY_WAKEUP;
 
 	/* set idle timeout based on master connector's lp value */
 	if (sde_enc->cur_master)
@@ -1693,15 +1691,10 @@ static void _sde_encoder_rc_restart_delayed(struct sde_encoder_virt *sde_enc,
 	else
 		lp = SDE_MODE_DPMS_ON;
 
-	fps = sde_enc->mode_info.frame_rate;
 	if ((lp == SDE_MODE_DPMS_LP1) || (lp == SDE_MODE_DPMS_LP2))
 		idle_pc_duration = IDLE_SHORT_TIMEOUT;
-	else {
-		frame_time_ms = 1000;
-		do_div(frame_time_ms, fps);
-		idle_pc_duration = max(4 * frame_time_ms, min_duration);
-		idle_pc_duration = min(idle_pc_duration, max_duration);
-	}
+	else
+		idle_pc_duration = IDLE_POWERCOLLAPSE_DURATION;
 
 	priv = drm_enc->dev->dev_private;
 	disp_thread = &priv->disp_thread[sde_enc->crtc->index];
