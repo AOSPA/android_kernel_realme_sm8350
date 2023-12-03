@@ -366,12 +366,13 @@ static int qcom_llcc_cfg_program(struct platform_device *pdev)
 	return ret;
 }
 
-static int qcom_llcc_remove(struct platform_device *pdev)
+int qcom_llcc_remove(struct platform_device *pdev)
 {
 	/* Set the global pointer to a error code to avoid referencing it */
 	drv_data = ERR_PTR(-ENODEV);
 	return 0;
 }
+EXPORT_SYMBOL_GPL(qcom_llcc_remove);
 
 static struct regmap *qcom_llcc_init_mmio(struct platform_device *pdev,
 		const char *name)
@@ -391,7 +392,7 @@ static struct regmap *qcom_llcc_init_mmio(struct platform_device *pdev,
 	return devm_regmap_init_mmio(&pdev->dev, base, &llcc_regmap_config);
 }
 
-static int qcom_llcc_probe(struct platform_device *pdev,
+int qcom_llcc_probe(struct platform_device *pdev,
 			   const struct llcc_slice_config *llcc_cfg, u32 sz)
 {
 	u32 num_banks;
@@ -502,6 +503,7 @@ err:
 	drv_data = ERR_PTR(-ENODEV);
 	return ret;
 }
+EXPORT_SYMBOL_GPL(qcom_llcc_probe);
 
 static int sdm845_qcom_llcc_remove(struct platform_device *pdev)
 {
