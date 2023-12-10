@@ -16,6 +16,24 @@
       "message": "weak commit message.  why?",
       "revId": "c71f90c0e7851033b85b82bb9dfd473005eaea7c",
       "serverId": "3162e3d8-d894-470e-abd9-724f7b0effad"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c599bdec_fa16286f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000760
+      },
+      "writtenOn": "2023-12-10T02:01:18Z",
+      "side": 1,
+      "message": "because i am updating the llcc snapshot from msm-5.10 which doesn\u0027t depend on these changes and hence causes build errors.",
+      "parentUuid": "85ae581c_d9b2e6e3",
+      "revId": "c71f90c0e7851033b85b82bb9dfd473005eaea7c",
+      "serverId": "3162e3d8-d894-470e-abd9-724f7b0effad"
     }
   ]
 }
