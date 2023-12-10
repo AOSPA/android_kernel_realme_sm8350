@@ -16,6 +16,24 @@
       "message": "why again?",
       "revId": "3a262261b295674b321bed0daf9acca5d7eeafda",
       "serverId": "3162e3d8-d894-470e-abd9-724f7b0effad"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c40ecf4d_9677d079",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000760
+      },
+      "writtenOn": "2023-12-10T02:06:02Z",
+      "side": 1,
+      "message": "the previous one looked like a mess. in upstream 5.4.262 greg merged https://android.googlesource.com/kernel/common/+/077010717b52f8a5384470071408659e0894277e\n\nwhich is very inconsistent with our kernel because we have llcc driver for many socs. so in this commit I\u0027m commonising them like what is done in msm-5.10.. this is a temporary fix untill qcom merge 5.4.262 because idk what they will do to fix this",
+      "parentUuid": "8680084c_c22ebd7b",
+      "revId": "3a262261b295674b321bed0daf9acca5d7eeafda",
+      "serverId": "3162e3d8-d894-470e-abd9-724f7b0effad"
     }
   ]
 }
